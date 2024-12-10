@@ -1,12 +1,17 @@
-class Board:
+class Board:                                                      # Aryan Fartash
 
-    def __init__(self):
+    def __init__(self):                                      #defining init method
+        self.fake_step=0
+        self.step=0
         self.fake_state=[]
         self.state=[]
         self.board=[]
 
         self.players=[]
-        filehandler=open("players.txt","r")
+        try:
+            filehandler=open("players.txt","r")              #readin
+        except:
+            pass
         lines=filehandler.readlines()
         for i in range(len(lines)):
             self.state.append('l')
@@ -19,8 +24,10 @@ class Board:
             else:
                 self.players.append([int(data[:key]),int(data[key+1:len(data)])])
 
-
-        filehandler2=open("exit.txt","r")
+        try:
+            filehandler2=open("exit.txt","r")
+        except:
+            pass
         self.exit=[0,0]
         data2 = filehandler2.read()
         for i in range(len(data2)):
@@ -32,8 +39,10 @@ class Board:
         else:
             self.exit[1]=int(data2[key2+1:len(data2)])
 
-
-        filehandler3=open("map.txt","r")
+        try:
+            filehandler3=open("map.txt","r")
+        except:
+            pass
         self.map=[]
         for i in range(12):
             self.map.append(filehandler3.read(16))
@@ -62,6 +71,7 @@ class Board:
 
 
     def update (self, direction):
+        self.step+=1
         key=0
         key2=0
         fake_players=self.players
@@ -213,58 +223,83 @@ class Board:
         if key1==0 and key2==1:
             return 1
         
- 
+    def save_map(self):
+        try:
+            outputFile = open("save.txt", "w")
+        except:
+            pass
+        for i in range(12):
+            for j in range(16):
+                outputFile.write(self.board[i][j])
+            outputFile.write("\n")
+        for i in range(len(self.players)):
+            outputFile.write(str(self.players[i][0]))
+            outputFile.write(" ")
+            outputFile.write(str(self.players[i][1]))
+            outputFile.write("\n")
+        for i in range(len(self.fake_state)):
+            outputFile.write(str(self.fake_state[i]))
+        outputFile.write("\n")
+        outputFile.write(str(self.step))
+        outputFile.close()
+
+    def load_map(self):
+        try:
+            filehandler=open("save.txt","r")
+        except:
+            pass
+        lines=filehandler.readlines()
+        self.map=[]
+        self.players=[]
+        self.fake_state=[]
+        for i in range(12):
+            self.map.append(lines[i])
+        for i in range(12,len(lines)-2,1):
+            data=lines[i]
+            for j in range(len(data)):
+                if data[j]==' ':
+                    key=j
+            if data[len(data)-1]=='\n':
+                self.players.append([int(data[:key]),int(data[key+1:len(data)-1])])
+            else:
+                self.players.append([int(data[:key]),int(data[key+1:len(data)])])
+        for i in range(len(lines[len(lines)-2])-1):
+            self.fake_state.append(lines[len(lines)-2][i])
+        self.step=int(lines[len(lines)-1][0])
+
+
+
+        
+
+        
+
+    def get_steps(self):
+        return self.step
+
+        
+"""
 x=Board()
 print(x.players)
 x.get_board()
+
+
 for i in range(12):
     print(x.get_board()[i])
+
 x.update('D')
 x.update('U')
 x.update('U')
 x.update('U')
 x.update('L')
-x.update('U')
-x.update('U')
-x.update('L')
-x.update('L')
-x.update('L')
-x.update('L')
-x.update('L')
-x.update('L')
-x.update('L')
-x.update('L')
-x.update('L')
-x.update('D')
-x.update('D')
-x.update('D')
-x.update('D')
-x.update('D')
-x.update('D')
-x.update('D')
-x.update('D')
-x.update('D')
-x.update('D')
-x.update('D')
-x.update('D')
 
+x.save_map()
 
+x.load_map()
+print(x.step)
 
-
-
-
-
-
-
-
-
-
-print(x.state)
-print(x.fake_state)
-print(x.get_state())
 
 
 x.get_board()
 for i in range(12):
     print(x.get_board()[i])
-
+"""
