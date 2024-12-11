@@ -10,44 +10,50 @@ class Board:                          #creating a class                         
         self.players=[]
         try:
             filehandler=open("players.txt","r")              #reading the players.txt file in a try and exept format so the program do not give an error if there was not a players.txt file
+            lines=filehandler.readlines()
+            self.players_number=len(lines)
+            for i in range(len(lines)):
+                self.state.append('l')                       #making a list of each player's state which is 'l' in the begining
+                data=lines[i]
+                for j in range(len(data)):
+                    if data[j]==' ':
+                        key=j
+                if data[len(data)-1]=='\n':
+                    self.players.append([int(data[:key]),int(data[key+1:len(data)-1])])    #creating a 2D list inwhich in we have stored the location of each player
+                else:
+                    self.players.append([int(data[:key]),int(data[key+1:len(data)])])
+
         except:
-            pass
-        lines=filehandler.readlines()
-        for i in range(len(lines)):
-            self.state.append('l')                       #making a list of each player's state which is 'l' in the begining
-            data=lines[i]
-            for j in range(len(data)):
-                if data[j]==' ':
-                    key=j
-            if data[len(data)-1]=='\n':
-                self.players.append([int(data[:key]),int(data[key+1:len(data)-1])])    #creating a 2D list inwhich in we have stored the location of each player
-            else:
-                self.players.append([int(data[:key]),int(data[key+1:len(data)])])
+            self.players_number=0
 
         try:
             filehandler2=open("exit.txt","r")                #reading the exit.txt file in a try and exept format so the program do not give an error if there was not a exit.txt file
+            self.exit=[0,0]
+            data2 = filehandler2.read()
+            for i in range(len(data2)):
+                if data2[i]==' ':
+                    key2=i
+            self.exit[0]=int(data2[:key2])
+            if data2[len(data2)-1]=='\n':
+                self.exit[1]=int(data2[key2+1:len(data2)-1])     #storing the location of the Exit in a list
+            else:
+                self.exit[1]=int(data2[key2+1:len(data2)])
+
         except:
-            pass
-        self.exit=[0,0]
-        data2 = filehandler2.read()
-        for i in range(len(data2)):
-            if data2[i]==' ':
-                key2=i
-        self.exit[0]=int(data2[:key2])
-        if data2[len(data2)-1]=='\n':
-            self.exit[1]=int(data2[key2+1:len(data2)-1])     #storing the location of the Exit in a list
-        else:
-            self.exit[1]=int(data2[key2+1:len(data2)])
+            self.exit=[-100]
 
         try:
             filehandler3=open("map.txt","r")                #reading the map.txt file in a try and exept format so the program do not give an error if there was not a map.txt file
-        except:
-            pass
-        self.map=[]
-        for i in range(12):
-            self.map.append(filehandler3.read(16))          #creating a 2D list and storng the exact map which is in 'map.txt' in that list
-            if i!=11:
-                filehandler3.read(1)
+            self.map=[]
+            for i in range(12):
+                self.map.append(filehandler3.read(16))          #creating a 2D list and storng the exact map which is in 'map.txt' in that list
+                if i!=11:
+                    filehandler3.read(1)        
+        except:                                   #if it could not read the map it will create an empty 12*16 board
+            self.map=[]
+            for i in range(12):
+                self.map.append('                ')           
+
 
 
 
@@ -63,7 +69,8 @@ class Board:                          #creating a class                         
                 else:
                     row.append(' ')
             self.board.append(row)                     #creating each row of our board using our map 2D list and appending it in our borad 2D list 
-        self.board[self.exit[0]][self.exit[1]]='E'     #putting the Exit in our board as "E"
+        if len(self.exit)!=1 and self.exit[0]!=-100:
+            self.board[self.exit[0]][self.exit[1]]='E'     #putting the Exit in our board as "E"
         for i in range(len(self.players)):
             self.board[self.players[i][0]][self.players[i][1]]='P'    #putting the players in our board as "P"
         return self.board                         #created the board and returned it as the return of the method
@@ -79,7 +86,7 @@ class Board:                          #creating a class                         
             self.step+=1
             list_t=[]
             for i in range(len(self.players)):
-                if -1<self.players[i][0]-1<12:   #cheching if the player is not in the edges. If it is, it does not move
+                if -1<self.players[i][0]-1<12:   #cheching if the player is on the board
                     if self.board[self.players[i][0]-1][self.players[i][1]]=='#':    #if the movement will lead to a wall, the player state will change 'd' as dead and the number of the player will be saved in a list so it will be removed in the future
                         list_t.append(i)
                         self.state[i]='d'
@@ -111,7 +118,7 @@ class Board:                          #creating a class                         
             self.step+=1
             list_t=[]
             for i in range(len(self.players)):
-                if -1<self.players[i][0]+1<12:         #cheching if the player is not in the edges. If it is, it does not move
+                if -1<self.players[i][0]+1<12:         #cheching if the player is on the board
                     if self.board[self.players[i][0]+1][self.players[i][1]]=='#':        #if the movement will lead to a wall, the player state will change 'd' as dead and the number of the player will be saved in a list so it will be removed in the future
                         list_t.append(i)
                         self.state[i]='d'
@@ -145,7 +152,7 @@ class Board:                          #creating a class                         
             self.step+=1
             list_t=[]
             for i in range(len(self.players)):
-                if -1<self.players[i][1]-1<16:         #cheching if the player is not in the edges. If it is, it does not move
+                if -1<self.players[i][1]-1<16:         #cheching if the player is on the board
                     if self.board[self.players[i][0]][self.players[i][1]-1]=='#':        #if the movement will lead to a wall, the player state will change 'd' as dead and the number of the player will be saved in a list so it will be removed in the future
                         list_t.append(i)
                         self.state[i]='d'
@@ -179,7 +186,7 @@ class Board:                          #creating a class                         
             self.step+=1
             list_t=[]
             for i in range(len(self.players)):
-                if -1<self.players[i][1]+1<16:         #cheching if the player is not in the edges. If it is, it does not move
+                if -1<self.players[i][1]+1<16:         #cheching if the player is on the board
                     if self.board[self.players[i][0]][self.players[i][1]+1]=='#':        #if the movement will lead to a wall, the player state will change 'd' as dead and the number of the player will be saved in a list so it will be removed in the future
                         list_t.append(i)
                         self.state[i]='d'
@@ -213,7 +220,7 @@ class Board:                          #creating a class                         
     def get_state(self):          #this method will return a number so the game would undrestand if the is over or not. And if it is over, what is the result
         key1=0
         key2=0
-        if len(self.fake_state)<4:     #this part will check if all the players are removed or not. If not, the game is not over yet
+        if len(self.fake_state)<self.players_number:     #this part will check if all the players are removed or not. If not, the game is not over yet
             return 0
         else:
             for state in self.fake_state:   # If all of them are removed, it will check the state of them if some of them won and some others died, it will return 3
