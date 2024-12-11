@@ -128,7 +128,6 @@ class Board:                          #creating a class                         
                     elif self.players[i][0]>7:         #in this part we check the possibilaty that if a player can not move due to the existence of other robots
                         for player in fake_players:
                             if player[1]==self.players[i][1] and player[0]==self.players[i][0]+1:
-                                print("ohooo")
                                 key=1
                         if key!=1:                     #if in the direction of the movement we did not have a robot, the robot will move 
                             self.players[i][0]+=1
@@ -162,7 +161,6 @@ class Board:                          #creating a class                         
                     elif self.players[i][1]<4:         #in this part we check the possibilaty that if a player can not move due to the existence of other robots
                         for player in fake_players:
                             if player[0]==self.players[i][0] and player[1]==self.players[i][1]-1:
-                                print("ohooo")
                                 key=1
                         if key!=1:                     #if in the direction of the movement we did not have a robot, the robot will move 
                             self.players[i][1]-=1
@@ -196,7 +194,6 @@ class Board:                          #creating a class                         
                     elif self.players[i][1]>11:         #in this part we check the possibilaty that if a player can not move due to the existence of other robots
                         for player in fake_players:
                             if player[0]==self.players[i][0] and player[1]==self.players[i][1]+1:
-                                print("ohooo")
                                 key=1
                         if key!=1:                     #if in the direction of the movement we did not have a robot, the robot will move 
                             self.players[i][1]+=1
@@ -258,29 +255,30 @@ class Board:                          #creating a class                         
     def load_map(self):          #in this method we read the save.txt file and replace the states and number of steps and board with what we have saved in save.txt file
         try:
             filehandler=open("save.txt","r")      #reading the save.txt file in a try and exept format so the program do not give an error if there was not a save.txt file
+            lines=filehandler.readlines()
+            self.map=[]
+            self.players=[]
+            self.fake_state=[]
+            self.state=[]
+            for i in range(12):
+                self.map.append(lines[i])             #replacing the board in our map
+            for i in range(12,len(lines)-2,1):
+                self.state.append('l')                #putting saved alived robots in the board
+                data=lines[i]
+                for j in range(len(data)):            #reading the location of saved alived robots from save.txt
+                    if data[j]==' ':
+                        key=j
+                if data[len(data)-1]=='\n':
+                    self.players.append([int(data[:key]),int(data[key+1:len(data)-1])])
+                else:
+                    self.players.append([int(data[:key]),int(data[key+1:len(data)])])
+            for i in range(len(lines[len(lines)-2])-1):        #replacing the state with the state we have saved in save.txt
+                self.fake_state.append(lines[len(lines)-2][i])
+            data=lines[len(lines)-1]
+            self.step=int(data)             #replacing the number of steps with the number of steps we have saved in save.txt
+    
         except:
             pass
-        lines=filehandler.readlines()
-        self.map=[]
-        self.players=[]
-        self.fake_state=[]
-        self.state=[]
-        for i in range(12):
-            self.map.append(lines[i])             #replacing the board in our map
-        for i in range(12,len(lines)-2,1):
-            self.state.append('l')                #putting saved alived robots in the board
-            data=lines[i]
-            for j in range(len(data)):            #reading the location of saved alived robots from save.txt
-                if data[j]==' ':
-                    key=j
-            if data[len(data)-1]=='\n':
-                self.players.append([int(data[:key]),int(data[key+1:len(data)-1])])
-            else:
-                self.players.append([int(data[:key]),int(data[key+1:len(data)])])
-        for i in range(len(lines[len(lines)-2])-1):        #replacing the state with the state we have saved in save.txt
-            self.fake_state.append(lines[len(lines)-2][i])
-        data=lines[len(lines)-1]
-        self.step=int(data)             #replacing the number of steps with the number of steps we have saved in save.txt
 
 
     def get_steps(self):
